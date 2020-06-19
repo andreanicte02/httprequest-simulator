@@ -7,8 +7,11 @@ import (
 	"github.com/GiterLab/urllib"
 	"io/ioutil"
 	"math"
+	"math/rand"
 	"os"
+	"strconv"
 	"strings"
+	"time"
 )
 
 type infoInical struct {
@@ -31,17 +34,15 @@ type strucData struct {
 
 }
 
+var peticionesEnviadas int =0
+var flag bool = false
+var timeCurrent = time.Now()
 
 func main() {
 
-	fmt.Println(". . . . inicio")
-	//leerData()
+	fmt.Println(". . . . iniciando")
 
-	/*var pac []paciente
-	var prueba string = "prueba.txt"
-
-	pac = getParams(prueba)
-	fmt.Printf("pacientes : %+v", pac)*/
+	leerData()
 
 
 
@@ -66,6 +67,7 @@ func leerData(){
 		fmt.Println("9. Salir")
 
 		fmt.Scanf("%d", &option)
+
 
 		if option == 0{
 			break
@@ -95,6 +97,7 @@ func optionSwitch(option int, info *infoInical) {
 		readTimeOut(&info)
 		break
 	case 6:
+		execConcurrence(&info)
 		break
 	case 7:
 		mostrarInfo(&info)
@@ -125,6 +128,7 @@ func readConcurrence(info **infoInical){
 	var concu int
 	fmt.Scanf("%d", &concu)
 	(*info).concurrencia = concu
+
 
 }
 
@@ -167,7 +171,10 @@ func mostrarInfo(info **infoInical)  {
 	fmt.Println("concurrencia: ", (*info).concurrencia)
 	fmt.Println("solicitudes: ", (*info).solicitudes)
 	fmt.Println("ruta carga: "+ (*info).rutaCarga )
-	fmt.Println("timeout: ", (*info).solicitudes)
+	fmt.Println("timeout: ", (*info).timeOut)
+
+	option:=-1
+	fmt.Scanf("%d", &option)
 
 }
 
@@ -187,7 +194,7 @@ func execConcurrence(info **infoInical){
 	var urlParams string = (*info).rutaCarga
 	var concurrence int = validarNumero((*info).concurrencia, 1, math.MaxInt64 )
 	var solcitudes int = validarNumero((*info).solicitudes, 1, math.MaxInt64 )
-	var time int = validarNumero((*info).timeOut, 1 ,math.MaxInt64)
+	var timeWait int = validarNumero((*info).timeOut, 1 ,math.MaxInt64)
 
 
 	if len(strings.TrimSpace(url)) == 0{
@@ -216,20 +223,68 @@ func execConcurrence(info **infoInical){
 
 	}
 
-	if time == -1{
+	if timeWait == -1{
 
 		println("La solicitud esta fuera de rango")
 		return
 
 	}
 
-	//queryString := getParams(urlParams)
+	var data[] strucData = getParams(urlParams)
+	peticionExterna(concurrence, url, data, solcitudes, timeWait)
+
+
 
 
 
 }
 
-func peticionExterna(concurrence int, url string, query []strucData, solicitudes int, timeout int){
+func peticionExterna(concurrence int, url string, data []strucData, solicitudes int, timeout int){
+
+	peticionesEnviadas = 0
+	flag = false
+
+
+	for i:=0 ;i< concurrence; i++{
+
+		go emular(i, url, data, solicitudes, timeout)
+
+	}
+
+	fmt.Println("fin de envios de datos")
+	var input string
+	fmt.Scanln(&input)
+
+}
+
+func emular(noPeticion int, url string, data [] strucData, total int, timesiu int)  {
+
+	for peticionesEnviadas < total {
+
+		var queryFinal string = url+"?"+getStringforRequest(data)
+		//aca se enviara la petcion al servidro
+		//str, err := urllib.Get("https://jsonplaceholder.typicode.com/users/1").String()
+
+		println("No. peticion: ", noPeticion, " Request: ", queryFinal, " total peticiones: ", peticionesEnviadas)
+		peticionesEnviadas+=1
+
+	}
+	time.Sleep((time.Second) )
+
+}
+
+func getStringforRequest(data []strucData) string  {
+	var max int = len(data)
+
+	if max == 0{
+		println("Esta vacio, la deta de las peticiones")
+		return "error"
+	}
+
+	var value int = rand.Intn(max- 0)+ 0
+	var query string = "Nombre="+data[value].Nombre+"&Departamento="+data[value].Departamento+"&Edad="+strconv.Itoa(data[value].Edad) + "&Formadecontagio="+data[value].Formadecontagio+"&Estado="+data[value].Estado
+
+	return query
 
 }
 
@@ -258,3 +313,5 @@ func envio_data() {
 	fmt.Println(str)
 
 }
+
+
