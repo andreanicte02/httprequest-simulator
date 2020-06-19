@@ -1,0 +1,20 @@
+[
+    {
+        "Nombre" : "NetoBran",
+        "Departamento" : "Guatemala",
+        "Edad" : 25,
+        "Forma de contagio" : "Comunitario",
+        "Estado" : "Activo"
+
+    },
+    {
+            "Nombre" : "NetoBran",
+            "Departamento" : "Guatemala",
+            "Edad" : 26,
+            "Forma de contagio" : "Comunitario saber",
+            "Estado" : "Activo"
+
+    }
+
+
+]
