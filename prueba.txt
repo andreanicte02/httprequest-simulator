@@ -8,10 +8,10 @@
 
     },
     {
-            "Nombre" : "NetoBran",
-            "Departamento" : "Guatemala",
+            "Nombre" : "Andrea Vicente",
+            "Departamento" : "Costa Rica",
             "Edad" : 26,
-            "Forma de contagio" : "Comunitario saber",
+            "Forma de contagio" : "Importado",
             "Estado" : "Activo"
 
     }

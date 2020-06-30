@@ -4,10 +4,11 @@ import (
 	"bufio"
 	"encoding/json"
 	"fmt"
-	"github.com/GiterLab/urllib"
 	"io/ioutil"
+	"log"
 	"math"
 	"math/rand"
+	"net/http"
 	"os"
 	"strconv"
 	"strings"
@@ -97,7 +98,7 @@ func optionSwitch(option int, info *infoInical) {
 		readTimeOut(&info)
 		break
 	case 6:
-		execConcurrence(&info)
+		startFlow(&info)
 		break
 	case 7:
 		mostrarInfo(&info)
@@ -188,7 +189,7 @@ func validarNumero(value int, valorMenor int, valorMax int) int {
 	return value
 }
 
-func execConcurrence(info **infoInical){
+func startFlow(info **infoInical){
 
 	var url string = (*info).url
 	var urlParams string = (*info).rutaCarga
@@ -231,15 +232,11 @@ func execConcurrence(info **infoInical){
 	}
 
 	var data[] strucData = getParams(urlParams)
-	peticionExterna(concurrence, url, data, solcitudes, timeWait)
-
-
-
-
+	startConcurrence(concurrence, url, data, solcitudes, timeWait)
 
 }
 
-func peticionExterna(concurrence int, url string, data []strucData, solicitudes int, timeout int){
+func startConcurrence(concurrence int, url string, data []strucData, solicitudes int, timeout int){
 
 	peticionesEnviadas = 0
 	flag = false
@@ -247,7 +244,7 @@ func peticionExterna(concurrence int, url string, data []strucData, solicitudes 
 
 	for i:=0 ;i< concurrence; i++{
 
-		go emular(i, url, data, solicitudes, timeout)
+		go peticion(i, url, data, solicitudes, timeout)
 
 	}
 
@@ -257,19 +254,23 @@ func peticionExterna(concurrence int, url string, data []strucData, solicitudes 
 
 }
 
-func emular(noPeticion int, url string, data [] strucData, total int, timesiu int)  {
+func peticion(noPeticion int, url string, data [] strucData, total int, timesiu int)  {
 
 	for peticionesEnviadas < total {
 
-		var queryFinal string = url+"?"+getStringforRequest(data)
+		//var queryFinal string = url+"?"+getStringforRequest(data)
 		//aca se enviara la petcion al servidro
 		//str, err := urllib.Get("https://jsonplaceholder.typicode.com/users/1").String()
+		//println("No. peticion: ", noPeticion, " Request: ", queryFinal, " total peticiones: ", peticionesEnviadas)
 
-		println("No. peticion: ", noPeticion, " Request: ", queryFinal, " total peticiones: ", peticionesEnviadas)
+		var dataRandom strucData = getDataforRequest(data)
+
+		sendDataPost(dataRandom, url, noPeticion, peticionesEnviadas)
+
 		peticionesEnviadas+=1
-
+		time.Sleep((time.Second))
 	}
-	time.Sleep((time.Second) )
+
 
 }
 
@@ -288,6 +289,18 @@ func getStringforRequest(data []strucData) string  {
 
 }
 
+func getDataforRequest(data []strucData) strucData{
+	var max int = len(data)
+
+	if max == 0{
+		println("Esta vacio, la deta de las peticiones")
+		log.Fatal("Esta vacio, la deta de las peticiones")
+	}
+
+	var value int = rand.Intn(max- 0)+ 0
+	return data[value]
+}
+
 func getParams(url string) []strucData {
 
 	bytesLeidos, err := ioutil.ReadFile(url)
@@ -304,14 +317,50 @@ func getParams(url string) []strucData {
 	return packs
 }
 
-func envio_data() {
 
-	str, err := urllib.Get("https://jsonplaceholder.typicode.com/users/1").String()
+func sendDataPost(dataFinal strucData, url string, noConcurrence int, totalPeticiones int) {
+
+	// request body (payload)
+	requestBody := strings.NewReader(`
+		{
+			"nombre":"`+dataFinal.Nombre+`",
+			"depto":"`+dataFinal.Departamento+`",
+			"edad":"`+string(dataFinal.Edad)+`",
+			"formaContagio":"`+dataFinal.Formadecontagio+`",
+			"estado":"`+dataFinal.Estado+`"
+		}
+	`)
+
+	//-post some data
+	//-aca va la url
+	res, err := http.Post(
+		"http://dummy.restapiexample.com/api/v1/create",
+		"application/json; charset=UTF-8",
+		requestBody,
+	)
+
+	//-check for response error
 	if err != nil {
-		// error
+		log.Fatal( err )
 	}
-	fmt.Println(str)
+
+	//-read response data
+	//data, _ := ioutil.ReadAll( res.Body )
+
+	// close response body
+	res.Body.Close()
+
+	//-print request `Content-Type` header
+	//requestContentType := res.Request.Header.Get( "Content-Type" )
+	//fmt.Println( "Request content-type:", requestContentType )
+
+	//-print response body
+	//fmt.Printf( "%s\n", data )
+
+
+
+	//mt.Println("No. concurrencia: ", noConcurrence, " total peticiones: ", peticionesEnviadas, " data: ", requestBody)
+
 
 }
-
 
