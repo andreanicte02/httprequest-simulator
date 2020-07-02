@@ -15,6 +15,16 @@
             "Estado" : "Activo"
 
     }
+    ,
+        {
+                "Nombre" : "Javier Jaime",
+                "Departamento" : "Zacapa",
+                "Edad" : 26,
+                "Forma de contagio" : "Comunitario",
+                "Estado" : "Inactivo"
+
+        }
+
 
 
 ]

@@ -10,20 +10,20 @@ import (
 )
 
 func main() {
+
 	envio_data()
-	envio_datapost()
 
 }
 func envio_data() {
 
-	//str, err := urllib.Get("https://jsonplaceholder.typicode.com/users/1").String()
-	req := urllib.Post("https://jsonplaceholder.typicode.com/posts")
-	req.Param("userId","1")
-	str, err := req.String()
-	if err != nil {
+
+	req, _ := urllib.Post("http://contour.usacteam.tk/").Header("Content-Type","application/json").JsonBody(`{"Nombre": "Jimmie Dalton","Departamento": "Chiquimula","Edad": 66,"Forma de contagio": "Comunitario","Estado": "Recuperado"  }`)
+
+
+	if req != nil {
 
 	}
-	fmt.Println(str)
+	fmt.Println(req.String())
 
 }
 

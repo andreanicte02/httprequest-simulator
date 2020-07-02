@@ -259,7 +259,8 @@ func peticion(noPeticion int, url string, data [] strucData, total int, timesiu 
 	for peticionesEnviadas < total {
 
 		//var queryFinal string = url+"?"+getStringforRequest(data)
-		//aca se enviara la petcion al servidro
+		//aca se enviara la petcion al servidror
+
 		//str, err := urllib.Get("https://jsonplaceholder.typicode.com/users/1").String()
 		//println("No. peticion: ", noPeticion, " Request: ", queryFinal, " total peticiones: ", peticionesEnviadas)
 
@@ -321,45 +322,39 @@ func getParams(url string) []strucData {
 func sendDataPost(dataFinal strucData, url string, noConcurrence int, totalPeticiones int) {
 
 	// request body (payload)
-	requestBody := strings.NewReader(`
-		{
-			"nombre":"`+dataFinal.Nombre+`",
-			"depto":"`+dataFinal.Departamento+`",
-			"edad":"`+string(dataFinal.Edad)+`",
-			"formaContagio":"`+dataFinal.Formadecontagio+`",
-			"estado":"`+dataFinal.Estado+`"
-		}
-	`)
+	requestBody := strings.NewReader(`{ "Nombre": "`+dataFinal.Nombre+`", "Departamento":"`+dataFinal.Departamento+`", "Edad": `+string(dataFinal.Edad)+`, "Forma de contagio":"`+dataFinal.Formadecontagio+`", "Estado":"`+dataFinal.Estado+`" }`)
+
 
 	//-post some data
 	//-aca va la url
 	res, err := http.Post(
-		"http://dummy.restapiexample.com/api/v1/create",
+		url,
 		"application/json; charset=UTF-8",
 		requestBody,
 	)
 
 	//-check for response error
 	if err != nil {
+		fmt.Println("error envio de peticiones")
 		log.Fatal( err )
 	}
 
 	//-read response data
-	//data, _ := ioutil.ReadAll( res.Body )
+	data, _ := ioutil.ReadAll( res.Body )
 
 	// close response body
 	res.Body.Close()
 
 	//-print request `Content-Type` header
-	//requestContentType := res.Request.Header.Get( "Content-Type" )
-	//fmt.Println( "Request content-type:", requestContentType )
+	requestContentType := res.Request.Header.Get( "Content-Type" )
+	fmt.Println( "Request content-type:", requestContentType )
 
 	//-print response body
-	//fmt.Printf( "%s\n", data )
+	fmt.Println( "%s\n", data )
 
 
 
-	//mt.Println("No. concurrencia: ", noConcurrence, " total peticiones: ", peticionesEnviadas, " data: ", requestBody)
+	fmt.Println("No. concurrencia: ", noConcurrence, " total peticiones: ", peticionesEnviadas, " data: ", requestBody)
 
 
 }
