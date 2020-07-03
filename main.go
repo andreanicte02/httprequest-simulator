@@ -322,7 +322,8 @@ func getParams(url string) []strucData {
 func sendDataPost(dataFinal strucData, url string, noConcurrence int, totalPeticiones int) {
 
 	// request body (payload)
-	requestBody := strings.NewReader(`{ "Nombre": "`+dataFinal.Nombre+`", "Departamento":"`+dataFinal.Departamento+`", "Edad": `+string(dataFinal.Edad)+`, "Forma de contagio":"`+dataFinal.Formadecontagio+`", "Estado":"`+dataFinal.Estado+`" }`)
+	requestBody := strings.NewReader(`{ "Nombre": "`+dataFinal.Nombre+`", "Departamento":"`+dataFinal.Departamento+`", "Edad": `+ strconv.Itoa(dataFinal.Edad) +`, "Forma de contagio":"`+dataFinal.Formadecontagio+`", "Estado":"`+dataFinal.Estado+`" }`)
+	//requestBody := strings.NewReader(`{"Nombre":"Jimmie NICTE4!","Departamento":"Chiquimula","Edad":66,"Forma de contagio":"Comunitario","Estado":"Recuperado"}`)
 
 
 	//-post some data
